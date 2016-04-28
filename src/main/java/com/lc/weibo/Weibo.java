@@ -15,11 +15,8 @@ import com.mongodb.*;
 import org.apache.log4j.*;
 
 public class Weibo {
-	public static Logger logger = Logger.getLogger(Weibo.class);
+	public static Logger logger = MongoApi.logger;
 
-	HashSet<String> allUsers = new HashSet<String>();
-	HashMap<String, Integer> userGuanzhu = new HashMap<String, Integer>();
-	HashMap<String, Integer> userFensi = new HashMap<String, Integer>();
 
 	File inputWeiboFile = new File("input_weibo.txt");
 	File relatedWeiboFile = new File("related_weibo.txt");
@@ -27,17 +24,7 @@ public class Weibo {
 	File relatedWeiboFensiFile = new File("related_weibo_fensi.txt");
 	
 	public Weibo(){
-		DBCollection user_col = getCollection("users");
-		for(DBObject obj: user_col.find()){
-			String uid = (String) obj.get("id");
-			allUsers.add(uid);
 
-			Integer guanzhu = Integer.parseInt((String) obj.get("friend"));
-			userGuanzhu.put(uid, guanzhu);
-
-			Integer fensi = Integer.parseInt((String) obj.get("follow"));
-			userFensi.put(uid, fensi);
-		}
 	}
 	
 	public DBCollection getCollection(String colName){
@@ -84,7 +71,7 @@ public class Weibo {
 					String uid = (String) obj.get("uid");
 					long date = Long.valueOf(dateStr);
 					
-					if(!hash.contains(uid) && allUsers.contains(uid)){
+					if(!hash.contains(uid) && MongoApi.allUsers.contains(uid)){
 						hash.add((String) obj.get("uid"));
 						int index = (int) ((date - startDate) / duration);
 						if(index >= storeNum){
@@ -151,7 +138,7 @@ public class Weibo {
 						String uid = (String) obj.get("uid");
 						long date = Long.valueOf(dateStr);
 
-						if(!hash.contains(uid) && allUsers.contains(uid)){
+						if(!hash.contains(uid) && MongoApi.allUsers.contains(uid)){
 							hash.add((String) obj.get("uid"));
 							int index = (int) ((date - minStartTime) / duration);
 							if(index >= allSlotsNum){
@@ -231,14 +218,14 @@ public class Weibo {
 						String uid = (String) obj.get("uid");
 						long date = Long.valueOf(dateStr);
 
-						if(!hash.contains(uid) && allUsers.contains(uid)){
+						if(!hash.contains(uid) && MongoApi.allUsers.contains(uid)){
 							hash.add((String) obj.get("uid"));
 							int index = (int) ((date - minStartTime) / duration);
 							if(index >= allSlotsNum){
 								index = allSlotsNum-1;
 							}
 
-							allSlots.get(i)[index] += userGuanzhu.get(uid);
+							allSlots.get(i)[index] += MongoApi.userGuanzhu.get(uid);
 							count++;
 						}
 					}
@@ -312,14 +299,14 @@ public class Weibo {
 						String uid = (String) obj.get("uid");
 						long date = Long.valueOf(dateStr);
 
-						if(!hash.contains(uid) && allUsers.contains(uid)){
+						if(!hash.contains(uid) && MongoApi.allUsers.contains(uid)){
 							hash.add((String) obj.get("uid"));
 							int index = (int) ((date - minStartTime) / duration);
 							if(index >= allSlotsNum){
 								index = allSlotsNum-1;
 							}
 
-							allSlots.get(i)[index] += userFensi.get(uid);
+							allSlots.get(i)[index] += MongoApi.userFensi.get(uid);
 							count++;
 						}
 					}
@@ -394,14 +381,14 @@ public class Weibo {
 						String uid = (String) obj.get("uid");
 						long date = Long.valueOf(dateStr);
 
-						if(!hash.contains(uid) && allUsers.contains(uid)){
+						if(!hash.contains(uid) && MongoApi.allUsers.contains(uid)){
 							hash.add((String) obj.get("uid"));
 							int index = (int) ((date - minStartTime) / duration);
 							if(index >= allSlotsNum){
 								index = allSlotsNum-1;
 							}
 
-							allSlots.get(i)[index] += userGuanzhu.get(uid);
+							allSlots.get(i)[index] += MongoApi.userGuanzhu.get(uid);
 							allSlotsCount.get(i)[index] ++;
 							count++;
 						}
@@ -477,14 +464,14 @@ public class Weibo {
 						String uid = (String) obj.get("uid");
 						long date = Long.valueOf(dateStr);
 
-						if(!hash.contains(uid) && allUsers.contains(uid)){
+						if(!hash.contains(uid) && MongoApi.allUsers.contains(uid)){
 							hash.add((String) obj.get("uid"));
 							int index = (int) ((date - minStartTime) / duration);
 							if(index >= allSlotsNum){
 								index = allSlotsNum-1;
 							}
 
-							allSlots.get(i)[index] += userFensi.get(uid);
+							allSlots.get(i)[index] += MongoApi.userFensi.get(uid);
 							allSlotsCount.get(i)[index] ++;
 							count++;
 						}

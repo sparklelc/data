@@ -11,7 +11,7 @@ public class Run {
         //weibo.outputWeiboReportSumInTimeDuration(1000L*60*60*24, 50); //50 slots with a day duration.
         //weibo.outputReportOfRelatedWeibo(1000L*60*60*24, 50);
         weibo.outputWeiboReportSumInTimeDuration(1000L*60*60, 24*50); //50 slots with a day duration.
-        weibo.outputReportOfRelatedWeibo(1000L*60*60, 24*50);
+        weibo.outputReportOfRelatedWeibo(1000L*60*60, 24*50); //output several weibos
 
         weibo.outputReportOfRelatedWeiboGuanzhu(1000L*60*60, 24*50);
         weibo.outputReportOfRelatedWeiboFensi(1000L*60*60, 24*50);

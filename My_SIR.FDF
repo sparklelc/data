@@ -1,0 +1,110 @@
+
+
+[General Information]
+Function Name = My_SIR
+Brief Description = 
+Function Source = N/A
+Number Of Parameters = 4
+Function Type = User-Defined
+Function Form = Equations
+Path = 
+Number Of Independent Variables = 2
+Number Of Dependent Variables = 2
+FunctionModel = Explicit
+
+
+[Fitting Parameters]
+Names = A,B,C1,C2
+Initial Values = 1(V),1(V),1(V),1(V)
+Meanings = ?,?,?,?
+Lower Bounds = --(I, Off),--(I, Off),--(I, Off),--(I, Off)
+Upper Bounds = --(I, Off),--(I, Off),--(I, Off),--(I, Off)
+Naming Method = User-Defined
+Number Of Significant Digits = 0,0,0,0
+Unit = ,,,
+Format = --,--,--,--
+CustomDisplay = --,--,--,--
+
+
+[Independent Variables]
+N = 
+M = 
+
+
+[Dependent Variables]
+y1 = 
+y2 = 
+
+
+[Formula]
+y1 = B*N*( C1- N * M )/C2 -A*N;
+y2 = A*N;
+
+
+[Constraints]
+
+
+[Initializations]
+
+
+[After Fitting]
+
+
+[Constants]
+
+
+[Controls]
+General Linear Constraints = 0
+Initialization Scripts = off
+Scripts After Fitting = off
+Number Of Duplicates = N/A
+Duplicate Offset = N/A
+Duplicate Unit = N/A
+Generate Curves After Fitting = Yes
+Curve Point Spacing = Uniform on X-Axis Scale
+Generate Peaks After Fitting = Yes
+Generate Peaks During Fitting = Yes
+Generate Peaks with Baseline = Yes
+Paste Parameters to Plot After Fitting = Yes
+Paste Parameters to Notes Window After Fitting = Yes
+Generate Residuals After Fitting = No
+Keep Parameters = No
+Compile On Param Change Script = off
+Enable Parameters Initialization = 1
+Treat All Numbers As Double = on
+
+
+
+[Compile Function]
+Compile = 0
+Compile Parameters Initialization = 1
+OnParamChangeScriptsEnabled = 0.
+
+
+[Parameters Initialization]
+//Code to be executed to initialize parameters
+
+
+[Origin C Function Header]
+
+
+[Origin C Parameter Initialization Header]
+
+
+
+
+
+[Derived Parameter Settings]
+Unit = 
+Names = 
+Meanings = 
+
+
+
+[QuickCheck]
+N=1
+M=1
+A=1
+B=1
+C1=1
+C2=1

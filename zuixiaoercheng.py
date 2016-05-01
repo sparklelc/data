@@ -10,14 +10,17 @@ import pylab as pl
 
 def load(file_name, columns, skip_row=0):
     return np.loadtxt(file_name, delimiter="\t", usecols=columns, skiprows=skip_row)
- 
+
+""" logistic
+"""
 def logistic(t, p):
-    C1, r, K = p
+    r, K = p
+    C1=0
     length = len(t)
     result = np.zeros(length, float)
     for i in range(0, length):
         try:
-            tem = math.exp(C1-r*t[i]) - 1
+            tem = math.exp(C1-r*t[i]) + 1
             if tem == 0:
                 tem = 1000000000.1
             else:
@@ -25,16 +28,24 @@ def logistic(t, p):
             result[i] = tem
         except Exception as e:
             result[i] = 0.00001
+            print e
     return result
     
 def relogistic(p, y, t):
+    r, K = p
     length = len(t)
     result = np.zeros(length, float)
     log_result = logistic(t, p)
     for i in range(0, length):
-        result[i] = y[i] - log_result[i]
+        if abs(r) > 0.5:
+            result[i] = sys.maxint
+        else:
+            result[i] = (y[i] - log_result[i])**2
     return result
-    
+
+
+""" lotka
+"""
 def relotka(p, N, M):
     """
     N M is the true number.
@@ -42,7 +53,8 @@ def relotka(p, N, M):
     a, b, c, d, e, f = p
     length = len(N)
     result = np.zeros(length, float)
-    #result[0] = random.randint(2,10)/10000.0
+    # result[0] could not calculate.
+    # result[0] = random.randint(2,10)/10000.0
     for i in range(1, length):
         errorN = abs(N[i] - N[i-1] - (a*N[i-1]+b*N[i-1]*N[i-1]+c*M[i-1]*N[i-1]))
         errorM = abs(M[i] - M[i-1] - (d*M[i-1]+e*M[i-1]*M[i-1]+f*M[i-1]*N[i-1]))
@@ -57,6 +69,7 @@ def rmse_lotka(p, N, M):
     diff_N = np.zeros(length, float)
     diff_M = np.zeros(length, float)
     for i in range(1, length):
+        # todo N_sim[i] could be calculate by N[i-1] or N_sim[i-1]
         N_cal = N[i-1] + (a*N[i-1]+b*N[i-1]*N[i-1]+c*M[i-1]*N[i-1])
         M_cal = M[i-1] + (d*M[i-1]+e*M[i-1]*M[i-1]+f*M[i-1]*N[i-1])
         
@@ -75,18 +88,37 @@ def rmse_lotka(p, N, M):
         total = total + errorN + errorM
         #print "total:", total, errorN, errorM
     return math.sqrt(total)/(len(N)+len(M))
-    
+
+def get_lotka(p, N, M):
+    a, b, c, d, e, f = p
+    length = len(N)
+    N_sim = np.zeros(length, float)
+    M_sim = np.zeros(length, float)
+    N_sim[0] = N[0]
+    M_sim[0] = M[0]
+    for i in range(1, length):
+        # todo N_sim[i] could be calculate by N[i-1] or N_sim[i-1]
+        N_sim[i] = N_sim[i-1] + a*N_sim[i-1] + b*N_sim[i-1]*N_sim[i-1] + c*N_sim[i-1]*M_sim[i-1]
+        M_sim[i] = M_sim[i-1] + d*M_sim[i-1] + e*M_sim[i-1]*M_sim[i-1] + f*N_sim[i-1]*M_sim[i-1]
+    return {"N": N_sim, "M": M_sim}
+
+""" other
+"""
 def rmse(line_true, line2):
     line3 = line_true - line2
     sum = 0.0
     for i in range(0, len(line2)):
         if not line_true[i] == 0: 
-            sum = sum + (float(line3[i])/line_true[i])**2
+            #sum = sum + (float(line3[i])/line_true[i])**2
+            sum = sum + (float(line3[i])) ** 2
         else:
             sum = sum + (float(line3[i])/1)**2
     sum = math.sqrt(sum)/len(line2)
     return sum
-    
+
+# cal sum
+# input  1,2,3
+# output 1,3,6
 def cal_sum(line):
     length = len(line)
     sum = 0.0
@@ -140,31 +172,65 @@ pl.show()
 all = load("BiQgAqoOZ_Bj3dI7Lkz_%_86400_52.txt", (1,2)).transpose()
 sub = all[:, 0:30]
 sub.astype(int)
-p0_l = [2, 1, 1, 2, 1, 1]
 N = sub[0:1, :].tolist()[0]
 M = sub[1:2, :].tolist()[0]
 N = cal_sum(N)
 M = cal_sum(M)
 x_l = range(1, len(N) + 1)
 
+
+
+
 print sub
 print N
 print M
-plsq_lot = leastsq(relotka, p0_l, args=(N, M))
-p0_l_n = plsq_lot[0]
+p_lot = [2, 1, 1, 2, 1, 1]
+plsq_lot = leastsq(relotka, p_lot, args=(N, M))
+p0_lot = plsq_lot[0]
 print "******************************"
-print p0_l_n
-print "final diff :", rmse_lotka(p0_l_n, N, M)
+print p0_lot
+print "final diff :", rmse_lotka(p0_lot, N, M)
 
+"""
+x = np.linspace(0, len(N), len(N))
+pl.plot(x, N, label="real")
+pl.plot(x, get_lotka(p0_lot, N, M)["N"], label="sim")
+pl.legend()
+pl.show()
+"""
 #print rmse(np.array([1,2,3]), np.array([1,2,2]))
 
-p0_log = [10, 1, 1]
-plsq_log_n = leastsq(relogistic, p0_log, args=(N, x_l))
+
+
+
+
+
+p_log = [1, -4000]
+
+plsq_log_n = leastsq(relogistic, p_log, args=(N, x_l))
 p0_log_n = plsq_log_n[0]
 print p0_log_n
 print "final diff N:", rmse(N, logistic(x_l, p0_log_n))
 
-plsq_log_m = leastsq(relogistic, p0_log, args=(M, x_l))
+x = np.linspace(0, len(N), len(N))
+pl.plot(x, N, label="real")
+pl.plot(x, logistic(x, p0_log_n), label="sim")
+print logistic(x, p0_log_n)
+pl.legend()
+pl.show()
+
+
+
+
+
+plsq_log_m = leastsq(relogistic, p_log, args=(M, x_l))
 p0_log_m = plsq_log_m[0]
 print p0_log_m
 print "final diff M:", rmse(M, logistic(x_l, p0_log_m))
+
+x = np.linspace(0, len(M), len(M))
+pl.plot(x, M, label="real")
+pl.plot(x, logistic(x, p0_log_m), label="sim")
+print logistic(x, p0_log_m)
+pl.legend()
+pl.show()
